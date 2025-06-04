@@ -19,6 +19,5 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.show();
-    print("终于可以push了!")
     return a.exec();
 }
