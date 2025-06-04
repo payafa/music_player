@@ -4,16 +4,28 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    ,player(new QMediaPlayer(this))
-    ,audioOutput(new QAudioOutput(this))
 {
     ui->setupUi(this);
-    player->setAudioOutput(audioOutput);
-    audioOutput->setVolume(50);
 }
 
 void MainWindow::playmusic(){
-    player->setSource(QUrl::fromLocalFile("D:/qt_project/music_player/music/李宗盛 - 山丘.mp3"));
+        sourceFile.setFileName("D:/qt_project/music_player/music/song.mp3");
+        sourceFile.open(QIODevice::ReadOnly);
+
+        QAudioFormat format;
+        format.setSampleRate(8000);          // 采样率
+        format.setChannelCount(1);           // 单声道
+        format.setSampleFormat(QAudioFormat::UInt8);  // 8位无符号格式
+
+        QAudioDevice info(QMediaDevices::defaultAudioOutput());
+        if (!info.isFormatSupported(format)) {
+            qWarning() << "Raw audio format not supported by backend, cannot play audio.";
+            return;
+        }
+
+        audio = new QAudioSink(format, this);
+
+        audio->start(&sourceFile);
 }
 
 MainWindow::~MainWindow()
