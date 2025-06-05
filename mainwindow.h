@@ -8,6 +8,12 @@
 #include <QIODevice>
 #include <QAudioDecoder>
 
+#include <QMediaPlayer>
+#include <QAudioOutput>
+
+#include <QMediaDevices>
+#include <QFile>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -26,12 +32,17 @@ public:
 private:
     Ui::MainWindow *ui;
     QUrl* url;
-    QAudioSink* audioSink;
-    QIODevice* audioDevice;
-    QAudioDecoder* decoder;
+    // QAudioSink* audioSink;
+    // QIODevice* audioDevice;
+    // QAudioDecoder* decoder;
+
+    QAudioSink* audio;
+    QFile sourceFile;
+
+
 
 public slots:
-    void onBufferReady();
-    void onDecodingFinished();
+    // void onBufferReady();
+    // void onDecodingFinished();
 };
 #endif // MAINWINDOW_H
