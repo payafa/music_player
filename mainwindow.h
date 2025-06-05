@@ -32,17 +32,15 @@ public:
 private:
     Ui::MainWindow *ui;
     QUrl* url;
-    // QAudioSink* audioSink;
-    // QIODevice* audioDevice;
-    // QAudioDecoder* decoder;
+    QAudioSink* audioSink;
+    QIODevice* audioDevice;
+    QAudioDecoder* audioDecoder;
 
-    QAudioSink* audio;
-    QFile sourceFile;
-
-
+    // QAudioSink* audio;
+    // QFile sourceFile;
 
 public slots:
-    // void onBufferReady();
-    // void onDecodingFinished();
+    void isBufferReady();
+    void isBufferFinished();
 };
 #endif // MAINWINDOW_H
