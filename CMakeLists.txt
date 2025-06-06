@@ -79,3 +79,35 @@ endif()
 #multimedia library import
 find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 target_link_libraries(music_player PRIVATE Qt6::Multimedia)
+
+
+
+
+
+
+set(FFMPEG_ROOT "${CMAKE_SOURCE_DIR}/libs/ffmpeg-7.1.1-full_build-shared")
+set(FFMPEG_INCLUDE_DIR "${FFMPEG_ROOT}/include")
+set(FFMPEG_LIB_DIR "${FFMPEG_ROOT}/lib")
+set(FFMPEG_BIN_DIR "${FFMPEG_ROOT}/bin")
+
+find_library(AVCODEC_LIBRARY avcodec PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(AVFORMAT_LIBRARY avformat PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(AVUTIL_LIBRARY avutil PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(SWRESAMPLE_LIBRARY swresample PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(AVDEVICE_LIBRARY avcodec PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(AVFILTER_LIBRARY avcodec PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(POSTPROC_LIBRARY avcodec PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+find_library(SWSCALE_LIBRARY avcodec PATHS ${FFMPEG_LIB_DIR} NO_DEFAULT_PATH)
+
+target_include_directories(music_player PRIVATE ${FFMPEG_INCLUDE_DIR})
+
+target_link_libraries(music_player PRIVATE
+    ${AVCODEC_LIBRARY}
+    ${AVFORMAT_LIBRARY}
+    ${AVUTIL_LIBRARY}
+    ${SWRESAMPLE_LIBRARY}
+    ${AVDEVICE_LIBRARY}
+    ${AVFILTER_LIBRARY}
+    ${POSTPROC_LIBRARY}
+    ${SWSCALE_LIBRARY}
+)
