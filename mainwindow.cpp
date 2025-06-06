@@ -8,6 +8,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 }
 
+void MainWindow::ts(){
+
+}
+
 void MainWindow::playmusic(){
 
     // //播放解码后的PCM流数据
@@ -31,7 +35,5 @@ void MainWindow::playmusic(){
 
 MainWindow::~MainWindow()
 {
-    delete audioSink;
-    delete audioDecoder;
     delete ui;
 }

@@ -4,10 +4,6 @@
 #include <QLocale>
 #include <QTranslator>
 
-extern "C" {
-#include <libavcodec/avcodec.h>
-}
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

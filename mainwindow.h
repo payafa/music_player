@@ -5,6 +5,11 @@
 #include <QDebug>
 #include <QUrl>
 
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -19,9 +24,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void playmusic();
+    void ts();
 
 private:
     Ui::MainWindow *ui;
+
 
 public slots:
 
