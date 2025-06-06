@@ -4,15 +4,6 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QUrl>
-#include <QAudioSink>
-#include <QIODevice>
-#include <QAudioDecoder>
-
-#include <QMediaPlayer>
-#include <QAudioOutput>
-
-#include <QMediaDevices>
-#include <QFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,16 +22,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QUrl* url;
-    QAudioSink* audioSink;
-    QIODevice* audioDevice;
-    QAudioDecoder* audioDecoder;
-
-    // QAudioSink* audio;
-    // QFile sourceFile;
 
 public slots:
-    void isBufferReady();
-    void isBufferFinished();
+
 };
 #endif // MAINWINDOW_H
