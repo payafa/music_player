@@ -13,5 +13,4 @@
     2.从AVFormatContext中分流，使用AVStream分出音频流
     3.给音频流解复用成AVPacket包
     4.逐个给AVPacket包解码成PCM流
-    5.把整个PCM流存在本地，作为已经听过的歌的缓冲内容
-    6.先判断这首歌是否有本地缓冲，如果有直接music_play，如果没有再解成PCM流再播放。
+    5.存储PCM流随后直接播放
