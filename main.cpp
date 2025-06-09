@@ -19,6 +19,6 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.show();
-    w.playmusic();
+    w.ts();
     return a.exec();
 }

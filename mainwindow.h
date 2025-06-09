@@ -4,10 +4,17 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QUrl>
+#include <QAudioFormat>
+#include <QAudioDevice>
+#include <QMediaDevices>
+#include <QAudioSink>
+#include <QIODevice>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#include <libavutil/samplefmt.h>
+#include <libswresample/swresample.h>
 }
 
 QT_BEGIN_NAMESPACE
@@ -28,7 +35,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
+    AVFormatContext *fmt_ctx;
+    QAudioSink* audio;
+    QIODevice* ioDevice;
 
 public slots:
 
