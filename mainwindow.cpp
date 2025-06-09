@@ -29,6 +29,13 @@ void MainWindow::ts(){
         return;
     }
 
+    //查找流媒体信息
+    if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+        qDebug() << "无法获取流信息";
+        avformat_close_input(&fmt_ctx);
+        return;
+    }
+
     //查找音频流索引，定义音频流
     int audio_idx = find_audio_stream(fmt_ctx);
     qDebug() << "音频流索引为" <<audio_idx;
@@ -45,7 +52,9 @@ void MainWindow::ts(){
     //通过codec定义AVCodecContext并用codecpar初始化
     AVCodecContext *codec_ctx = avcodec_alloc_context3(codec);
     avcodec_parameters_to_context(codec_ctx, codecpar);
-    if (avcodec_open2(codec_ctx, codec, NULL) < 0) {
+
+    //打开解码器
+    if (avcodec_open2(codec_ctx, codec, NULL) != 0) {
         qDebug() << "无法打开解码器";
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&fmt_ctx);
@@ -56,12 +65,12 @@ void MainWindow::ts(){
     QAudioFormat format;
     format.setSampleRate(44100);
     format.setChannelCount(2);
-    format.setSampleFormat(QAudioFormat::UInt8);
+    format.setSampleFormat(QAudioFormat::Int16);
 
     //使用默认音频
     QAudioDevice info(QMediaDevices::defaultAudioOutput());
     if (!info.isFormatSupported(format)) {
-        qWarning() << "Raw audio format not supported by backend, cannot play audio.";
+        qWarning() << "输出设备不支持该格式，不能播放音频";
         return;
     }
 
@@ -73,7 +82,30 @@ void MainWindow::ts(){
     AVPacket *pkt = av_packet_alloc();
     AVFrame *frame = av_frame_alloc();
 
-    //开始给解码器发包，每发一个pkt就向frame里存储一帧，随即write进QIODevice就可以播放这一帧的音乐了，用while循环反复播放
+    //定义重采样器SwrContext
+    SwrContext *swr_ctx = NULL;
+    AVChannelLayout out_ch_layout = AV_CHANNEL_LAYOUT_STEREO;
+    AVSampleFormat out_sample_fmt = AV_SAMPLE_FMT_S16;
+    int out_sample_rate = 44100;
+    AVChannelLayout in_ch_layout = codec_ctx -> ch_layout;
+    AVSampleFormat in_sample_fmt = codec_ctx -> sample_fmt;
+    int in_sample_rate = codec_ctx -> sample_rate;
+    int ret = swr_alloc_set_opts2(&swr_ctx ,
+                                  &out_ch_layout , out_sample_fmt , out_sample_rate ,
+                                  &in_ch_layout , in_sample_fmt , in_sample_rate , 0 , NULL);
+
+
+    qDebug()<<"码率:"<<codec_ctx->bit_rate;
+    qDebug()<<"格式:"<<codec_ctx->sample_fmt;
+    qDebug()<<"采样率:"<<codec_ctx->sample_rate;
+
+    if (ret < 0 || swr_ctx == nullptr) {
+        qDebug() << "重采样器分配失败";
+        return;
+    }
+    else swr_init(swr_ctx);
+
+    // //开始给解码器发包，每发一个pkt就向frame里存储一帧，随即write进QIODevice就可以播放这一帧的音乐了，用while循环反复播放
     while(av_read_frame(fmt_ctx , pkt) >= 0){
         if(pkt -> stream_index == audio_idx){
             if(avcodec_send_packet(codec_ctx , pkt) < 0){
@@ -82,6 +114,21 @@ void MainWindow::ts(){
             }
 
             //下面会写上对frame的处理，还会把数据write进QIODevice，估计还会写重采样
+            while(avcodec_receive_frame(codec_ctx , frame) == 0){
+                uint8_t *data[2] = { 0 };
+                int byteCnt = frame -> nb_samples * 2 * 2;
+                unsigned char *pcm = new uint8_t[byteCnt];
+
+                data[0] = pcm;
+
+                ret = swr_convert(swr_ctx , data, frame -> nb_samples , (const uint8_t**)frame -> data,frame -> nb_samples);
+                if(ret < 0){
+                    qDebug() << "重采样失败";
+                    break;
+                }
+
+                ioDevice -> write((const char *)pcm,byteCnt);
+            }
         }
     }
 }
